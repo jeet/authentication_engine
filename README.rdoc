@@ -1,15 +1,34 @@
 = AuthenticationEngine
 
-This engine will give you an instant authentication system for a new site, including support for user registration, openID authentication, and password resets via email. You will be able to customize look and feel, but it works right out of the box. Even with a completely empty app. ;-)
+This engine will give you an instant authentication system for a new site, including: 
+
+* support for multiple modes of user registration
+* registration via openID authentication
+* invitations
+* activation via email
+* password resets via email. 
+* international support
+
+You will be able to customize look and feel, but it works right out of the box. Even with a completely empty app. ;-)
+
+Thanks to Tse-Ching Ho it is now localized into Chinese and Taiwanese. Feel free to add your own languages.
 
 This Rails 2.3 engine is using the excellent Authlogic gem (http://github.com/binarylogic/authlogic/tree/master) from Ben Johnson at BinaryLogic, and is based on the sample application for that gem.
+
+*This engine is under active development so use with care.  Add any issues as github issues*
+
+
+== Change Log
+
+2009-05-05  Merged Tse-Ching Ho's branch.
 
 == Requirements
 
 1. You need Rails 2.3! This engine is not based on the rails-engines plugin. 
 2. You need the Authlogic gem, but it will prompt for the gem if it's missing
-3. The OpenID Authentication plugin. Yes, I built in OpenID support by default.
-4. The authlogic_oid gem.
+3. The authlogic_oid gem.
+4. The OpenID Authentication plugin.
+4. The i18_label plugin.
 
 == Installation
 
@@ -24,31 +43,55 @@ This Rails 2.3 engine is using the excellent Authlogic gem (http://github.com/bi
   
   $ rake db:migrate
 
-the authentication_engine:sync rake task does the following, so use it with care on an existing site:
+The authentication_engine:sync rake moves following files into your app:
 
-1. moves the migration files over to db/migrate 
-2. moves an authentication_config.yml file and it's initializer into config
-3. moves a mailer template over. rails doesn't seem to pick up mailer templates inside engines
+  app/controllers/application_controller.rb
+  app/helpers/application_helper.rb
+  app/helpers/layout_helper.rb
+  app/views/layout/application.html.erb
+  config/authentication_engine.yml
+  config/environments/test.rb
+  config/initializers/config_loader.rb
+  config/locales/en.yml
+  config/locales/zh-CN.yml
+  config/locales/zh-TW.yml
+  db/migrate/20090216144927_create_users.rb
+  db/migrate/20090216175329_create_invitations.rb
+  public/stylesheets/authentication.css
+  public/stylesheets/admin/admin.css
+  public/stylesheets/admin/invitations.css
+  public/stylesheets/admin/pagination.css
+  public/stylesheets/admin/users.css
 
-== Configuration
+Note: The task keeps a version of your old one files if there is a conflict. It's not destructive, but you may want to check your code for changes.
 
-A couple of simple steps to get up and running:
+== Setup
 
-In your application_controller.rb, you need to include authentication_system, like so:
+If you are starting with a completely empty rails site, 
 
-  class ApplicationController < ActionController::Base
-    include AuthenticationEngine
-    include LocalizedSystem
+1. remove index.html in public folder
 
-    helper :all # include all helpers, all the time
-    protect_from_forgery # See ActionController::RequestForgeryProtection for details
-  end
+  rm public/index.html
 
-If you are starting with a completely empty rails site, add a site root like this:
+2. and add a temporary site root like this:
 
   map.root :controller => "home", :action => "index"
 
-and remove index.html in public folder,
+3. login with username and password 'root', and remember to change it right away!
+
+== Configuration
+
+This version of the engine gives you detailed control over the user registration, signup, and activation process. 
+You can change the behavior to suit your needs by editing the authentication_engine.yml file.
+
+The registration settings control how user accounts are created and activated.
+
+  limited:: only admins can send invites to user so they can register
+  private:: registered users can send invites to other users
+  requested:: a user can request an account, but only admin can approve it
+  public:: anyone can register and activate their own accounts 
+
+The signup and activation values default to false, but if set to true, will over-ride the default authlogic behavior and prompt for username and password after account signup and activation. Suitable for the more paranoid among you who 
 
 and then for every controller you want to protect, simply add:
 
@@ -74,7 +117,7 @@ In your layouts and views you can also call the login status bar:
   <%= render :partial => 'shared/user_status' %>
 
 
-== Testing
+== Testing (This is still work in progress!)
 
 Just remember to add this line to your routes.rb:
 
@@ -113,8 +156,10 @@ Perhaps that gets rolled into a separate authorization_engine ?
 
 == Credits
 
-On this one, all credit goes to Ben Johnson at BinaryLogic for providing a fresh start on authentication systems for Rails:
+On this one, much credit goes to Ben Johnson at BinaryLogic for providing a fresh start on authentication systems for Rails:
 http://github.com/binarylogic/authlogic/tree/master
+
+And to Tse-Ching Ho, for adding internationalization, email activation, and much, much more...
 
 Enjoy!
 
