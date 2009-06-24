@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+
   acts_as_authentic do |c|
     c.validates_length_of_login_field_options = {:within => 3..100, :on => :update, :if => :validate_login_with_openid?}
     c.validates_format_of_login_field_options = {:with => /\A\w[\w\.\-_@ ]+\z/, :on => :update, :message => I18n.t('authlogic.error_messages.login_invalid', :default => "should use only letters, numbers, spaces, and .-_@ please."), :if => :validate_login_with_openid?}

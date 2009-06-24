@@ -2,53 +2,32 @@ Given /"([^\"]*)" is an anonymous user/ do |name|
   visit '/logout'
 end
 
-Given /^"([^\"]*)" an unconfirmed user$/ do |name|
-  Given "\"#{name}\" is an anonymous user"
+Given /^I have registered successfully$/ do
+  Given "I am an anonymous user"
   When "I go to the registration form"
-  Then "I should see the registration form"
-  And "I fill in \"name\" with \"#{name}\""
-  And "I fill in \"email\" with \"#{name}@example.com\""
+  And "I fill in \"name\" with \"bob\""
+  And "I fill in \"email\" with \"bob@example.com\""
   And "I press \"Register\""
   Then "I should have a successful registration"
 end
 
-Given /^"([^\"]*)" a notified but unconfirmed user$/ do |name|
-  Given "\"#{name}\" an unconfirmed user"
-  And "I should receive an email"
+Given /^I have received an activation email$/ do
+  Given "I should receive an email"
   When "I open the email"
   Then "I should see \"activate your account\" in the email"
 end
 
-Given /^"([^\"]*)" a confirmed user with password "([^\"]*)"$/ do |name, password|
-  Given "\"#{name}\" a notified but unconfirmed user"
-  When "I follow \"activate your account\" in the email"
-  And "I fill in \"login\" with \"#{name}\""
-  And "I fill in \"set your password\" with \"#{password}\""
-  And "I fill in \"password confirmation\" with \"#{password}\""
-  And "I press \"Activate\""
-  Then "I should have a successful activation"
-  And "a clear email queue"
-  When "I follow \"Logout\""
-  Then "I should be logged out"
-end
-
-Given /^"([^\"]*)" a confirmed user with email "([^\"]*)"$/ do |name, email|
-  Given "\"#{name}\" is an anonymous user"
-  When "I go to the registration form"
-  And "I fill in \"name\" with \"#{name}\""
-  And "I fill in \"email\" with \"#{email}\""
-  And "I press \"Register\""
-  Then "I should receive an email"
-  When "I open the email"
-  And "I follow \"activate your account\" in the email"
-  And "I fill in \"login\" with \"#{name}\""
+Given /^I have successfully activated my account$/ do
+  Given "I have registered successfully"
+    And "I have received an activation email"
+    And "I follow \"activate your account\" in the email"
+  Then "I should see the activation form"
+  And "I fill in \"login\" with \"bob\""
   And "I fill in \"set your password\" with \"secret\""
   And "I fill in \"password confirmation\" with \"secret\""
   And "I press \"Activate\""
   Then "I should have a successful activation"
-  And "a clear email queue"
-  When "I follow \"Logout\""
-  Then "I should be logged out"
+  And "I should be logged in"
 end
 
 Then /^I should see the registration form$/ do
