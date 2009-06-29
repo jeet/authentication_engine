@@ -1,5 +1,3 @@
-@focus
-
 Feature: Registration
   In order to get my personal account
   As a anonymous user

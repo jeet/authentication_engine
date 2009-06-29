@@ -42,4 +42,14 @@ class UserMailer < ActionMailer::Base
     sent_on       Time.now
     body          :invitation => invitation
   end
+
+  def invitation_activation_notice(user)
+    subject       'Invitation Activated'
+    # subject       I18n.t('user_mailer.titles.user_invitation_request')
+    from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
+    recipients    user.invitation.sender.email
+    sent_on       Time.now
+    body          :user => user
+  end
+
 end

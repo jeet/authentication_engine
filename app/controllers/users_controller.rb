@@ -38,6 +38,8 @@ class UsersController < ApplicationController
       if result
         if @user.invitation
           @user.deliver_activation_confirmation!
+          #TODO: fix failing mailer template
+          # @user.deliver_invitation_activation_notice!
           flash[:success] = t('activations.flashs.success.create')
           redirect_to account_url
         else

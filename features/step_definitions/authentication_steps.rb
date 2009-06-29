@@ -29,6 +29,20 @@ Given /^I am logged in as "([^\"]*)" with password "([^\"]*)"$/ do |login, passw
   end
 end
 
+Given /^I am logged in as "([^\"]*)" with email "([^\"]*)"$/ do |name, email|
+  u = User.new
+  u.signup_without_credentials!({:name => name, :email => email}) {}
+  u.activate!({:login => name, :password => 'secret', :password_confirmation => 'secret'}, false) {}
+  visit login_path
+  fill_in "Login", :with => name
+  fill_in "Password", :with => 'secret'
+  click_button "Login"
+  save_and_open_page 
+
+end
+
+
+
 Given /^I should see a login form$/ do
   response.should contain("Login")
   response.should contain("Password")

@@ -131,6 +131,11 @@ class User < ActiveRecord::Base
     UserMailer.deliver_activation_confirmation(self)
   end
 
+  def deliver_invitation_activation_notice!
+    # return unless self.invitation
+    UserMailer.deliver_invitation_activation_notice(self)
+  end
+
   def deliver_password_reset_instructions!
     reset_perishable_token!
     UserMailer.deliver_password_reset_instructions(self)

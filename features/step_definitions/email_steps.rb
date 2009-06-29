@@ -32,6 +32,10 @@ When /^I open the email$/ do
   open_email(current_email_address)
 end
 
+When /"([^\"]*)" opens the email$/ do |address|
+  open_email(address)
+end
+
 When %r{^I follow "([^"]*?)" in the email$} do |link|
   visit_in_email(link)
 end
@@ -57,8 +61,16 @@ Then %r{^I should see "([^"]*?)" in the subject$} do |text|
   current_email.should have_subject(Regexp.new(text))
 end
 
+Then %r{^"([^"]*?)" should see "([^"]*?)" in the subject$} do |address,text|
+  current_email.should have_subject(Regexp.new(text))
+end
+
 Then %r{^I should see "([^"]*?)" in the email$} do |text|
   current_email.body.should =~ Regexp.new(text)
+end
+
+When %r{^I open the email with subject "([^"]*?)"$} do |subject|
+  open_email(current_email_address, :with_subject => subject)
 end
 
 When %r{^"([^"]*?)" opens? the email with subject "([^"]*?)"$} do |address, subject|
@@ -69,7 +81,10 @@ When %r{^"([^"]*?)" opens? the email with text "([^"]*?)"$} do |address, text|
   open_email(address, :with_text => text)
 end
 
+Then %r{^"([^"]*?)" should see "([^"]*?)" in the email$} do |address,text|
+  current_email.body.should =~ Regexp.new(text)
+end
+
 When /^I click the first link in the email$/ do
   click_first_link_in_email
 end
-

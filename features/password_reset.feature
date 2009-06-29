@@ -5,7 +5,9 @@ Feature: Password Reset
 
   Scenario: Display a reset password form
     Given I am an anonymous user
-    When I go to the reset password page
+    When I go to the login page
+    Then I should see "Forgot password"
+    When I follow "Forgot password"
     Then I should see a reset password form
 
   Scenario: Send a reset instructions email if given a valid email
