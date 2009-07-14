@@ -38,6 +38,55 @@ class User < ActiveRecord::Base
   before_create :set_invitation_limit
   before_destroy :deny_admin_suicide
 
+
+  state_machine :initial => :created do
+    event :apply do
+      transition :created => :applied
+    end
+    
+    event :register do
+      transition :created => :registered
+    end
+    
+    event :approve do
+      transition [:applied, :registered] => :approved
+    end
+    
+    event :invite do
+      transition [:approved] => :invited
+    end
+    
+    event :activate do
+      transition [:invited, :registered] => :active
+    end
+    
+    event :disable do
+      transition :active => :disabled
+    end
+    
+    event :archive do
+      transition all => :archived
+    end
+    
+    event :remove do
+      transition :archived => :deleted
+    end
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   def invitation_token
     invitation.token if invitation
   end
