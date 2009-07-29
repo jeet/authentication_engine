@@ -11,13 +11,13 @@ class Invitation < ActiveRecord::Base
 
   validates_presence_of :applicant_email, :unless => :sender
   validates_length_of :applicant_email, :within => 6..100, :unless => :sender
-  validates_format_of :applicant_email, :with => email_regex, :message => :invalid, :unless => :sender
+  validates_format_of :applicant_email, :with => Authlogic::Regex.email, :message => :invalid, :unless => :sender
   validate :applicant_is_not_invited, :unless => :sender
   validate :applicant_is_not_registered, :unless => :sender
 
   validates_presence_of :recipient_email, :if => :sender
   validates_length_of :recipient_email, :within => 6..100, :if => :sender
-  validates_format_of :recipient_email, :with => email_regex, :message => :invalid, :if => :sender
+  validates_format_of :recipient_email, :with => Authlogic::Regex.email, :message => :invalid, :if => :sender
   validates_uniqueness_of :recipient_email, :case_sensitive => false, :if => :sender
   validate :recipient_is_not_registered, :if => :sender
   validate :sender_has_invitations, :if => :sender
