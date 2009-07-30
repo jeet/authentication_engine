@@ -58,8 +58,8 @@ Feature: Authentication
       |         | secret     | 1     | Login can not be blank                             |
       |         | bad secret | 1     | Login can not be blank                             |
       | unknown |            | 1     | Password can not be blank                          |
-      | unknown | secret     | 1     | Login does not exist                               |
-      | unknown | bad secret | 1     | Login does not exist                               |
+      | unknown | secret     | 1     | Login is not valid                                 |
+      | unknown | bad secret | 1     | Login is not valid                                 |
       | bob     |            | 1     | Password can not be blank                          |
       | bob     | bad secret | 1     | Password is not valid                              |
 
