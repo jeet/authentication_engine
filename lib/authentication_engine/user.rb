@@ -9,12 +9,20 @@ module AuthenticationEngine
 
     # require authlogic
     module InstanceMethods
+      # We need to distinguish general signup or invitee singup
+      def signup!(user, prompt, &block)
+        return save(true, &block) if respond_to?(:openid_identifier) && openid_complete?
+        return signup_as_invitee!(user, prompt, &block) if respond_to?(:signup_as_invitee!) && user && user[:invitation_id]
+        return signup_by_openid!(user, &block) if respond_to?(:signup_by_openid!) && user && !user[:openid_identifier].blank?
+        signup_without_credentials!(user, &block)
+      end
+      
       # Since users have to activate themself with credentials,
       # we should signup without session maintenance and save with block.
       def signup_without_credentials!(user, &block)
         unless user.blank?
-          self.name = user[:name]
-          self.email = user[:email]
+          self.name = user[:name] unless user[:name].blank?
+          self.email = user[:email] unless user[:email].blank?
         end
         # only one user can be admin
         self.admin = true if self.class.count == 0
@@ -35,6 +43,13 @@ module AuthenticationEngine
       # we only have name and email for a new created user
       def to_param
         "#{id}-#{name.parameterize}"
+      end
+
+      private
+
+      # one admin at least
+      def deny_admin_suicide
+        raise 'admin suicided' if self.class.count(&:admin) <= 1
       end
     end
 
@@ -59,11 +74,31 @@ module AuthenticationEngine
     module AuthlogicOpenIdMethods
       def self.included(receiver)
         receiver.class_eval do
+          # extend/include methods of authlogic-oid in case of no methods found
+          extend AuthlogicOpenid::ActsAsAuthentic::Config
+          include AuthlogicOpenid::ActsAsAuthentic::Methods
+          
           attr_accessible :openid_identifier
           
           merge_validates_length_of_login_field_options :if => :validate_login_with_openid?
           merge_validates_format_of_login_field_options :if => :validate_login_with_openid?
+          
+          openid_required_fields [:nickname, :email]
+          openid_optional_fields [:fullname, :dob, :gender, :postcode, :country, :language, :timezone]
+          
+          # hack by alias_method_chain for authlogic-oid
+          alias_method_chain :attributes_to_save, :reliability
+          alias_method_chain :map_openid_registration, :custom_fields
         end
+      end
+
+      def signup_by_openid!(user, &block)
+        unless user.blank?
+          self.name = user[:name] unless user[:name].blank?
+          self.email = user[:email] unless user[:email].blank?
+          self.openid_identifier = user[:openid_identifier]
+        end
+        save_with_block(false, &block)
       end
 
       # check when user's credentials changed
@@ -73,13 +108,27 @@ module AuthenticationEngine
 
       private
 
-      def attributes_to_save
-        attrs_to_save = attributes.clone.delete_if do |k, v|
-          [:password, crypted_password_field, password_salt_field, :persistence_token, :perishable_token, :single_access_token, :login_count, 
-            :failed_login_count, :last_request_at, :current_login_at, :last_login_at, :current_login_ip, :last_login_ip, :created_at,
-            :updated_at, :lock_version, :admin, :invitation_limit].include?(k.to_sym)
-        end
-        attrs_to_save.merge!(:password => password, :password_confirmation => password_confirmation)
+      # fetch persona from openid.sreg parameters returned by openid server if supported
+      # http://openid.net/specs/openid-simple-registration-extension-1_0.html
+      def map_openid_registration_with_custom_fields(registration)
+        self.nickname ||= registration["nickname"] if respond_to?(:nickname) && !registration["nickname"].blank?
+        self.login ||= registration["nickname"] if respond_to?(:login) && !registration["nickname"].blank?
+        self.email ||= registration["email"] if respond_to?(:email) && !registration["email"].blank?
+        self.name ||= registration["fullname"] if respond_to?(:name) && !registration["fullname"].blank?
+        self.first_name ||= registration["fullname"].split(" ").first if respond_to?(:first_name) && !registration["fullname"].blank?
+        self.last_name ||= registration["fullname"].split(" ").last if respond_to?(:last_name) && !registration["fullname"].blank?
+        self.birthday ||= registration["dob"] if respond_to?(:birthday) && !registration["dob"].blank?
+        self.gender ||= registration["gender"] if respond_to?(:gender) && !registration["gender"].blank?
+        self.postcode ||= registration["postcode"] if respond_to?(:postcode) && !registration["postcode"].blank?
+        self.country ||= registration["country"] if respond_to?(:country) && !registration["country"].blank?
+        self.language ||= registration["language"] if respond_to?(:language) && !registration["language"].blank?
+        self.timezone ||= registration["timezone"] if respond_to?(:timezone) && !registration["timezone"].blank?
+      end
+
+      # reject more protected attributes of model
+      def attributes_to_save_with_reliability
+        attrs_to_save = attributes_to_save_without_reliability
+        attrs_to_save.reject { |k,v| [:admin, :invitation_limit].include?(k.to_sym) }
       end
     end
 
@@ -92,9 +141,9 @@ module AuthenticationEngine
           self.login = user[:login]
           self.password = user[:password]
           self.password_confirmation = user[:password_confirmation]
-          self.openid_identifier = user[:openid_identifier]
+          self.openid_identifier = user[:openid_identifier] if respond_to?(:openid_identifier)
         end
-        logged = prompt and validate_password_with_openid?
+        logged = prompt && validate_password_with_openid?
         save_with_block(logged, &block)
       end
 
@@ -136,7 +185,7 @@ module AuthenticationEngine
       # we save with block.
       def signup_as_invitee!(user, prompt, &block)
         self.attributes = user if user
-        logged = prompt and validate_password_with_openid?
+        logged = prompt && validate_password_with_openid?
         save_with_block(logged, &block)
       end
 
@@ -182,6 +231,9 @@ module AuthenticationEngine
         
         merge_validates_length_of_password_field_options :on => :update
         merge_validates_confirmation_of_password_field_options :on => :update, :if => :password_salt_is_changed?
+        merge_validates_length_of_password_confirmation_field_options :on => :update
+        
+        before_destroy :deny_admin_suicide
       end
     end
   end
