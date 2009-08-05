@@ -18,7 +18,6 @@ else
   end
 end
 
-require File.dirname(__FILE__) + '/lib/authentication_engine/localized_system'
-require File.dirname(__FILE__) + '/lib/authentication_engine/base_controller'
-require File.dirname(__FILE__) + "/lib/authentication_engine/user"
-
+config.to_prepare do
+  ApplicationController.helper(LayoutHelper)
+end
