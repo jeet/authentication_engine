@@ -1,5 +1,5 @@
 module AuthenticationEngine
-  module LocalizedSystem
+  module Localization
     module ClassMethods
 
     end

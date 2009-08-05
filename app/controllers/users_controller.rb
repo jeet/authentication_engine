@@ -1,7 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :no_user_signup, :only => [:new, :create]
-  before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => [:show, :edit, :update]
+  include AuthenticationEngine::Authorization::User
   before_filter :find_user, :only => [:show, :edit, :update]
 
   # GET /account

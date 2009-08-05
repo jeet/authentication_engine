@@ -1,6 +1,5 @@
 class ActivationsController < ApplicationController
-  before_filter :limited_or_public_signup, :only => [:new, :create]
-  before_filter :require_no_user, :only => [:new, :create]
+  include AuthenticationEngine::Authorization::Activation
 
   # GET /register/:activation_code
   def new

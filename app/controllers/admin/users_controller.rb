@@ -1,5 +1,5 @@
 class Admin::UsersController < Admin::AdminController
-  before_filter :limited_signup, :only => [:new, :create]
+  include AuthenticationEngine::Authorization::Admin::User
   before_filter :find_user, :only => [:show, :edit, :update]
 
   def index
