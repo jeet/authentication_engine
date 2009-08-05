@@ -28,3 +28,6 @@ require 'factory_girl'
 
 # require 'declarative_authorization/maintenance'
 # include Authorization::Maintenance
+
+# mock the response of open id server
+require 'authentication_engine/test_case/mock_open_id_authentication'
