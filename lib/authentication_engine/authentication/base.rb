@@ -11,7 +11,7 @@ module AuthenticationEngine
         protected
 
         def current_user_session
-          @current_user_session ||= UserSession.find
+          @current_user_session ||= ::UserSession.find
         end
 
         def current_user
