@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   include AuthenticationEngine::Authentication::User
   before_filter :find_user, :only => [:show, :edit, :update]
+  include AuthenticationEngine::Authorization::User
 
   # GET /account
   def show

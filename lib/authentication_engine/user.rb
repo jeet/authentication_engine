@@ -213,6 +213,36 @@ module AuthenticationEngine
       end
     end
 
+    module Authorization
+      def self.included(receiver)
+        receiver.class_eval do
+          has_and_belongs_to_many :roles, :join_table => "user_roles"
+          
+          using_access_control
+          
+          before_save :set_current_user_for_model_security
+          # use after_save to create default role
+          # every singed up user will have one role at least
+          after_save :create_default_role
+        end
+      end
+
+      def role_symbols
+        (roles || []).map { |r| r.name.to_sym }
+      end
+
+      protected
+
+      def set_current_user_for_model_security
+        ::Authorization.current_user = self
+      end
+
+      def create_default_role
+        return unless roles.empty?
+        roles << ::Role.find_or_create_by_name(:name => 'member', :title => 'Member')
+      end
+    end
+
     def self.included(receiver)
       receiver.extend ClassMethods
       receiver.send :include, InstanceMethods

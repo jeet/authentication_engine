@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   include AuthenticationEngine::User
+  include AuthenticationEngine::User::Authorization
 
   # Just keep this in model in case of being called again in customized User model
   # if someone wants to modify configs definded in AuthenticationEngine::User module

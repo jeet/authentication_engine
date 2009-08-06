@@ -28,7 +28,8 @@ This Rails 2.3 engine is using the excellent Authlogic gem (http://github.com/bi
 2. You need the Authlogic gem, but it will prompt for the gem if it's missing
 3. The authlogic_oid gem.
 4. The OpenID Authentication plugin.
-4. The i18_label plugin.
+5. The i18_label plugin.
+6. The declarative_authorization gem
 
 == Installation
 
@@ -52,11 +53,21 @@ The authentication_engine:sync rake moves following files into your app:
   config/authentication_engine.yml
   config/environments/test.rb
   config/initializers/config_loader.rb
+  config/locales/authentication_engine/en.yml
+  config/locales/authentication_engine/zh-CN.yml
+  config/locales/authentication_engine/zh-TW.yml
+  config/locales/authlogic/en.yml
+  config/locales/authlogic/zh-CN.yml
+  config/locales/authlogic/zh-TW.yml
+  config/locales/rails/zh-CN.yml
+  config/locales/rails/zh-TW.yml
   config/locales/en.yml
   config/locales/zh-CN.yml
   config/locales/zh-TW.yml
   db/migrate/20090216144927_create_users.rb
+  db/migrate/20090216172211_create_open_id_talbes.rb
   db/migrate/20090216175329_create_invitations.rb
+  db/migrate/20090806032027_create_roles.rb
   public/stylesheets/authentication.css
   public/stylesheets/admin/admin.css
   public/stylesheets/admin/invitations.css
