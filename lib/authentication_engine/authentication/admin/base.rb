@@ -11,7 +11,7 @@ module AuthenticationEngine
 
           # Before filter to limit certain actions to administrators
           def require_admin
-            return unless admin?
+            return if admin?
             store_location
             flash[:error] = t('users.flashs.errors.admin_required')
             redirect_to root_url

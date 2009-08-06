@@ -227,6 +227,10 @@ module AuthenticationEngine
         end
       end
 
+      def admin?
+        roles.any? {|r| r.name == 'admin'}
+      end
+
       def role_symbols
         (roles || []).map { |r| r.name.to_sym }
       end
