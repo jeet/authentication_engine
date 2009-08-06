@@ -1,22 +1,27 @@
 authorization do
-  role :guest do
+  role :guest, :title => "Guest" do
+    description "The default role for anonymous user"
     # Don't remove this or you can't signup
     has_permission_on :users, :to => :create
   end
 
-  role :member do
+  role :member, :title => "Member" do
+    description "The default role for authenticated user"
     has_permission_on :users, :to => [:show, :update]
   end
 
-  role :author do
+  role :author, :title => "Author" do
+    description "The default role for author"
     has_permission_on :users, :to => [:show, :update]
   end
 
-  role :manager do
+  role :manager, :title => "Manager" do
+    description "The default role for manager"
     has_permission_on :users, :to => [:show, :update]
   end
 
-  role :admin do
+  role :admin, :title => "Administrator" do
+    description "The powerest role of the system"
     has_permission_on :users, :to => :manage
     has_permission_on :roles, :to => :manage
   end
