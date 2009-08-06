@@ -17,6 +17,7 @@ class CreateRoles < ActiveRecord::Migration
     Role.find_or_create_by_name(:name => 'manager', :title => 'Manager')
     Role.find_or_create_by_name(:name => 'admin', :title => 'Administrator')
     puts "Roles (member, author, manager, admin) created."
+    User.find_by_login('root').roles << Role.find_by_name('admin')
   end
 
   def self.down
