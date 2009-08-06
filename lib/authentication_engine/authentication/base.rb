@@ -1,5 +1,7 @@
 module AuthenticationEngine
   module Authentication
+    # use ActionController::Filters to work with authentication
+    # http://api.rubyonrails.org/classes/ActionController/Filters/ClassMethods.html
     module Base
       module ClassMethods
 
@@ -23,6 +25,22 @@ module AuthenticationEngine
         def redirect_back_or_default(default)
           redirect_to(session[:return_to] || default)
           session[:return_to] = nil
+        end
+
+        def require_user
+          return if current_user
+          store_location
+          flash[:notice] = t('users.flashs.notices.login_required')
+          redirect_to login_url
+          return false
+        end
+
+        def require_no_user
+          return unless current_user
+          store_location
+          flash[:notice] = t('users.flashs.notices.logout_required')
+          redirect_to account_url
+          return false
         end
 
         # Helper method to determine whether the current user is an administrator

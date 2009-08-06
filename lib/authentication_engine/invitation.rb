@@ -3,7 +3,7 @@ module AuthenticationEngine
     module ClassMethods
       
     end
-    
+
     # require authlogic
     module InstanceMethods
       private

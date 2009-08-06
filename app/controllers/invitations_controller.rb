@@ -1,5 +1,5 @@
 class InvitationsController < ApplicationController
-  include AuthenticationEngine::Authorization::Invitation
+  include AuthenticationEngine::Authentication::Invitation
 
   # GET /invitations/new
   def new

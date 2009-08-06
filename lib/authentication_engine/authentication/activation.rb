@@ -1,5 +1,5 @@
 module AuthenticationEngine
-  module Authorization
+  module Authentication
     module Activation
       module ClassMethods
         

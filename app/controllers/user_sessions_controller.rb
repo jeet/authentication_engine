@@ -1,5 +1,5 @@
 class UserSessionsController < ApplicationController
-  include AuthenticationEngine::Authorization::UserSession
+  include AuthenticationEngine::Authentication::UserSession
 
   # GET /login
   def new

@@ -10,21 +10,6 @@ module AuthenticationEngine
       module InstanceMethods
         protected
 
-        def require_user
-          return if current_user
-          store_location
-          flash[:notice] = t('users.flashs.notices.login_required')
-          redirect_to login_url
-          return false
-        end
-
-        def require_no_user
-          return unless current_user
-          store_location
-          flash[:notice] = t('users.flashs.notices.logout_required')
-          redirect_to account_url
-          return false
-        end
       end
 
       def self.included(receiver)

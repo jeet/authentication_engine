@@ -1,5 +1,5 @@
 class ActivationsController < ApplicationController
-  include AuthenticationEngine::Authorization::Activation
+  include AuthenticationEngine::Authentication::Activation
 
   # GET /register/:activation_code
   def new

@@ -1,5 +1,5 @@
 class PasswordResetsController < ApplicationController
-  include AuthenticationEngine::Authorization::PasswordReset
+  include AuthenticationEngine::Authentication::PasswordReset
   before_filter :load_user_using_perishable_token, :only => [:edit, :update]
 
   # GET /password_resets/new
