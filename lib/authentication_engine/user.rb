@@ -16,7 +16,7 @@ module AuthenticationEngine
         return signup_by_openid!(user, &block) if respond_to?(:signup_by_openid!) && user && !user[:openid_identifier].blank?
         signup_without_credentials!(user, &block)
       end
-      
+
       # Since users have to activate themself with credentials,
       # we should signup without session maintenance and save with block.
       def signup_without_credentials!(user, &block)
@@ -77,15 +77,15 @@ module AuthenticationEngine
           # extend/include methods of authlogic-oid in case of no methods found
           extend AuthlogicOpenid::ActsAsAuthentic::Config
           include AuthlogicOpenid::ActsAsAuthentic::Methods
-          
+
           attr_accessible :openid_identifier
-          
+
           merge_validates_length_of_login_field_options :if => :validate_login_with_openid?
           merge_validates_format_of_login_field_options :if => :validate_login_with_openid?
-          
+
           openid_required_fields [:nickname, :email]
           openid_optional_fields [:fullname, :dob, :gender, :postcode, :country, :language, :timezone]
-          
+
           # hack by alias_method_chain for authlogic-oid
           alias_method_chain :attributes_to_save, :reliability
           alias_method_chain :map_openid_registration, :custom_fields
@@ -165,7 +165,7 @@ module AuthenticationEngine
         receiver.class_eval do
           has_many :sent_invitations, :class_name => 'Invitation', :foreign_key => 'sender_id'
           belongs_to :invitation
-          
+
           validates_length_of :login, :within => 3..100, :on => :create, :if => :invited_and_require_password?
           validates_format_of :login, :with => /\A\w[\w\.\-_@ ]+\z/, :on => :create, :message => I18n.t('authlogic.error_messages.login_invalid', :default => "should use only letters, numbers, spaces, and .-_@ please."), :if => :invited_and_require_password?
           validates_uniqueness_of :login, :on => :create, :case_sensitive => false, :if => :invited_and_require_password?
@@ -173,10 +173,10 @@ module AuthenticationEngine
           validates_length_of :password, :minimum => 4, :on => :create, :if => :invited_and_require_password?
           validates_confirmation_of :password_confirmation, :on => :create, :if => :invited_and_require_password?
           validates_length_of :password_confirmation, :minimum => 4, :on => :create, :if => :invited_and_require_password?
-          
+
           validates_uniqueness_of :invitation_id, :allow_nil => true
           attr_accessible :invitation_id
-          
+
           before_create :set_invitation_limit
         end
       end
@@ -217,9 +217,9 @@ module AuthenticationEngine
       def self.included(receiver)
         receiver.class_eval do
           has_and_belongs_to_many :roles, :join_table => "user_roles"
-          
+
           using_access_control
-          
+
           before_save :set_current_user_for_model_security
           # use after_save to create default role
           # every singed up user will have one role at least
@@ -228,7 +228,7 @@ module AuthenticationEngine
       end
 
       def admin?
-        roles.any? {|r| r.name == 'admin'}
+        roles.any? { |r| r.name == 'admin' }
       end
 
       def role_symbols
@@ -247,6 +247,46 @@ module AuthenticationEngine
       end
     end
 
+    module StateMachine
+      def self.included(receiver)
+        receiver.class_eval do
+          state_machine :initial => :created do
+            event :apply do
+              transition :created => :applied
+            end
+
+            event :register do
+              transition :created => :registered
+            end
+
+            event :approve do
+              transition [:applied, :registered] => :approved
+            end
+
+            event :invite do
+              transition [:approved] => :invited
+            end
+
+            event :activate do
+              transition [:invited, :registered] => :active
+            end
+
+            event :disable do
+              transition :active => :disabled
+            end
+
+            event :archive do
+              transition all => :archived
+            end
+
+            event :remove do
+              transition :archived => :deleted
+            end
+          end
+        end
+      end
+    end
+
     def self.included(receiver)
       receiver.extend ClassMethods
       receiver.send :include, InstanceMethods
@@ -256,17 +296,17 @@ module AuthenticationEngine
       receiver.send :include, InvitationMethods
       receiver.class_eval do
         validates_presence_of :name
-        
+
         attr_accessible :name, :email, :login, :password, :password_confirmation
-        
+
         merge_validates_length_of_login_field_options :on => :update
         merge_validates_format_of_login_field_options :on => :update, :message => I18n.t('authlogic.error_messages.login_invalid')
         merge_validates_uniqueness_of_login_field_options :on => :update
-        
+
         merge_validates_length_of_password_field_options :on => :update
         merge_validates_confirmation_of_password_field_options :on => :update, :if => :password_salt_is_changed?
         merge_validates_length_of_password_confirmation_field_options :on => :update
-        
+
         before_destroy :deny_admin_suicide
       end
     end
