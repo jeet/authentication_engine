@@ -1,4 +1,5 @@
 class Admin::UsersController < Admin::AdminController
+  unloadable
   include AuthenticationEngine::Authentication::Admin::User
   before_filter :find_user, :only => [:show, :edit, :update]
 

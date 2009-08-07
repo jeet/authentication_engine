@@ -1,4 +1,5 @@
 class PasswordResetsController < ApplicationController
+  unloadable
   include AuthenticationEngine::Authentication::PasswordReset
   before_filter :load_user_using_perishable_token, :only => [:edit, :update]
 

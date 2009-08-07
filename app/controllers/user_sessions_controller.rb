@@ -1,4 +1,5 @@
 class UserSessionsController < ApplicationController
+  unloadable
   include AuthenticationEngine::Authentication::UserSession
 
   # GET /login

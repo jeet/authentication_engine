@@ -1,4 +1,5 @@
 class ActivationsController < ApplicationController
+  unloadable
   include AuthenticationEngine::Authentication::Activation
 
   # GET /register/:activation_code

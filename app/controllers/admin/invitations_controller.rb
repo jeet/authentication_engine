@@ -1,4 +1,5 @@
 class Admin::InvitationsController < Admin::AdminController
+  unloadable
   before_filter :find_invitation, :only => [:show, :edit, :update, :destroy, :deliver]
 
   def index

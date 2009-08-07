@@ -1,4 +1,5 @@
 class InvitationsController < ApplicationController
+  unloadable
   include AuthenticationEngine::Authentication::Invitation
 
   # GET /invitations/new
