@@ -216,7 +216,7 @@ module AuthenticationEngine
     module Authorization
       def self.included(receiver)
         receiver.class_eval do
-          has_and_belongs_to_many :roles, :join_table => "user_roles"
+          has_and_belongs_to_many :roles
 
           using_access_control
 
