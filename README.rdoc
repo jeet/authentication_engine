@@ -88,7 +88,11 @@ If you are starting with a completely empty rails site,
 
   map.root :controller => "home", :action => "index"
 
-3. login with username and password 'root', and remember to change it right away!
+3. add authlogic as first required gem in environment.rb
+
+  config.gem 'authlogic', :lib => 'authlogic', :version => '>=2.1.1', :source => "http://gems.rubyforge.org"
+
+4. login with username and password 'root', and remember to change it right away!
 
 == Configuration
 

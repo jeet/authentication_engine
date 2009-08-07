@@ -11,6 +11,7 @@ namespace :authentication_engine do
     system "rsync -rbv #{plugin_path}/app/views/layouts/application.html.erb app/views/layouts"
     system "rsync -ruv #{plugin_path}/config/authentication_engine.yml config"
     system "rsync -rbv #{plugin_path}/config/authorization_rules.rb config"
+    system "rsync -rbv #{plugin_path}/config/database.yml config"
     system "rsync -rbv #{plugin_path}/config/environments config"
     system "rsync -ruv #{plugin_path}/config/initializers config"
     system "rsync -rbv #{plugin_path}/config/locales config"
