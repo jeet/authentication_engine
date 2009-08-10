@@ -4,19 +4,19 @@ end
 
 Given /^I am a confirmed user "([^\"]*)" with password "([^\"]*)"$/ do |name, password|
   u = User.new
-  u.signup_without_credentials!({:name => name, :email => "#{name}@example.com"}) {}
+  u.signup!({:name => name, :email => "#{name}@example.com"}, false) {}
   u.activate!({:login => name, :password => password, :password_confirmation => password}, false) {}
 end
 
 Given /^I am a confirmed user with email "([^\"]*)"$/ do |email|
   u = User.new
-  u.signup_without_credentials!({:name => "Foo Bar", :email => email }) {}
+  u.signup!({:name => "Foo Bar", :email => email}, false) {}
   u.activate!({:login => 'foobar', :password => 'secret', :password_confirmation => 'secret'}, false) {}
 end
 
 Given /^I am an un-confirmed user with email "([^\"]*)"$/ do |email|
   u = User.new
-  u.signup_without_credentials!({:name => "Foo Bar", :email => email }) {}
+  u.signup!({:name => "Foo Bar", :email => email}, false) {}
 end
 
 Given /^I am logged in as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
@@ -31,17 +31,14 @@ end
 
 Given /^I am logged in as "([^\"]*)" with email "([^\"]*)"$/ do |name, email|
   u = User.new
-  u.signup_without_credentials!({:name => name, :email => email}) {}
+  u.signup!({:name => name, :email => email}, false) {}
   u.activate!({:login => name, :password => 'secret', :password_confirmation => 'secret'}, false) {}
   visit login_path
   fill_in "Login", :with => name
   fill_in "Password", :with => 'secret'
   click_button "Login"
   save_and_open_page 
-
 end
-
-
 
 Given /^I should see a login form$/ do
   response.should contain("Login")
@@ -63,12 +60,8 @@ Given /^the following user records$/ do |table|
   table.hashes.each do |hash|
     # ex: hash = {'login' => 'bob', 'password' => 'secret'}
     u = User.new
-    u.signup_without_credentials!({:name => hash['login'], :email => "#{hash['login']}@example.com"}) {}
+    u.signup!({:name => hash['login'], :email => "#{hash['login']}@example.com"}, false) {}
     u.activate!({:login => hash['login'], :password => hash['password'], :password_confirmation => hash['password']}, false) {}
-    ## please don't use signup! method, this will invoke an authlogic_oid method 'openid_complete?'
-    ## since we don't have a good openid testing environment yet.
-    #u.signup!(:login => hash['login'], :email => "#{hash['login']}@example.com")
-    #u.activate!(:password => hash['password'], :password_confirmation => hash['password'])
   end
 end
 
@@ -79,5 +72,3 @@ Factory.define :user do |f|
   f.password_confirmation { |u| u.password }
   f.sequence(:email) { |n| "foo#{n}@example.com" }
 end
-
-

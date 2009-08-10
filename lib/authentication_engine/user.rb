@@ -11,9 +11,9 @@ module AuthenticationEngine
     module InstanceMethods
       # We need to distinguish general signup or invitee singup
       def signup!(user, prompt, &block)
-        return save(true, &block) if respond_to?(:openid_identifier) && openid_complete?
-        return signup_as_invitee!(user, prompt, &block) if respond_to?(:signup_as_invitee!) && user && user[:invitation_id]
+        return save(true, &block) if respond_to?(:openid_complete?) && session_class.activated? && openid_complete?
         return signup_by_openid!(user, &block) if respond_to?(:signup_by_openid!) && user && !user[:openid_identifier].blank?
+        return signup_as_invitee!(user, prompt, &block) if respond_to?(:signup_as_invitee!) && user && user[:invitation_id]
         signup_without_credentials!(user, &block)
       end
 
@@ -104,6 +104,10 @@ module AuthenticationEngine
       # check when user's credentials changed
       def validate_login_with_openid?
         validate_password_with_openid?
+      end
+
+      def openid_complete?
+        session_class.controller.params[:open_id_complete] && session_class.controller.params[:for_model]
       end
 
       private
@@ -213,6 +217,7 @@ module AuthenticationEngine
       end
     end
 
+    # require declarative_authorization
     module Authorization
       def self.included(receiver)
         receiver.class_eval do
@@ -247,20 +252,35 @@ module AuthenticationEngine
       end
     end
 
+    # require state_machine
     module StateMachine
       def self.included(receiver)
         receiver.class_eval do
+          alias_method :signup_with_params!, :signup!
+          alias_method :activate_with_credentials!, :activate!
+
           state_machine :initial => :created do
-            event :apply do
-              transition :created => :applied
+            after_transition :created => :registered do |user, transition|
+              # disable perishable token reset for signup mail delivering
+              user.class.disable_perishable_token_maintenance true
+              #u.save false # persis the state
+              user.save_without_session_maintenance false # persis the state
+              user.class.disable_perishable_token_maintenance false
             end
 
+            #event :signup do
+            #  transition :created => :registered
+            #end
             event :register do
               transition :created => :registered
             end
 
+            event :apply do
+              transition :created => :applied
+            end
+
             event :approve do
-              transition [:applied, :registered] => :approved
+              transition [:registered, :applied] => :approved
             end
 
             event :invite do
@@ -283,7 +303,64 @@ module AuthenticationEngine
               transition :archived => :deleted
             end
           end
+
+          # The state machine will define even name methods automatically ("signup" and "signup!" in this case).
+          # Then our original "signup!" method will be overwrited and user signup will fail.
+          # We must define "signup!" method again after the state_machine definition in User model,
+          # or use alias_method_chain in module to resolve this situation. Same as "activate!"
+          #alias_method_chain :signup!, :authentication
+
+          alias_method_chain :signup!, :register
+          alias_method_chain :activate!, :authentication
         end
+      end
+
+      # method chain procedure:
+      # signup! (in controller) => singup! (state_machine of User) => signup_with_authentication!
+      def signup_with_authentication!(user, prompt, &block)
+        result = signup_with_params(user, prompt, &block)
+        # fire "signup" event only when user is created/signed up successfully
+        # since login, password and password_confirmation aren't required for singup,
+        # skip run_action (save) of state_machine to avoid validation on update,
+        # and return "final" result to avoid double render/redirect error
+        signup_without_authentication! false if result
+      end
+
+      def signup_with_register!(user, prompt, &block)
+        result = signup_without_register!(user, prompt, &block)
+        if result
+          if invitation_id.blank?
+            # fire "register" event only when user is created/signed up successfully
+            # since login, password and password_confirmation aren't required for singup,
+            # skip run_action (save) of state_machine to avoid validation on update
+            # and return "final" result to avoid double render/redirect error
+            register false
+          else
+            apply
+            approve
+            invite
+            activate
+          end
+        end
+      end
+
+      def activate_with_authentication!(user, prompt, &block)
+        # validation will be affected by "active?", "approved?", and "confirmed?" methods of state machine,
+        # skip validation of magic states of authlogic session,
+        # otherwise user_session won't activate after "activate_with_credentials!"
+        self.class.session_class.disable_magic_states true
+        result = activate_with_credentials!(user, prompt, &block)
+        # This "unless" condition will disable user_session validation of magic states forever
+        # and we should write validations of each state for user session than use this hack
+        unless respond_to?(:approved?) or respond_to?(:confirmed?)
+          # turn on validation of magic states of authlogic session
+          # since user may not be "approved" or "confirmed?" and cause validation of magic states
+          self.class.session_class.disable_magic_states false
+        end
+        # fire "activate" event only when user is activated with credentials successfully
+        # do run_action (save) of state_machine since user is "active" or "approved" before validation
+        # and return "final" result to avoid double render/redirect error
+        activate_without_authentication! if result
       end
     end
 

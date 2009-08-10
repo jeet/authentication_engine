@@ -4,7 +4,11 @@ class ActivationsController < ApplicationController
 
   # GET /register/:activation_code
   def new
-    @user = User.find_using_perishable_token(params[:activation_code], 1.week) || (raise Exception)
+    if User.respond_to? :with_state
+      @user = User.with_state(:registered).find_using_perishable_token(params[:activation_code], 1.week) || (raise Exception)
+    else
+      @user = User.find_using_perishable_token(params[:activation_code], 1.week) || (raise Exception)
+    end
     #raise Exception if @user.active?
   rescue Exception => e
     redirect_to root_url
@@ -12,7 +16,11 @@ class ActivationsController < ApplicationController
 
   # POST /activate/:id
   def create
-    @user = User.find(params[:id])
+    if User.respond_to? :with_state
+      @user = User.with_state(:registered).find(params[:id])
+    else
+      @user = User.find(params[:id])
+    end
     #raise Exception if @user.active?
 
     @user.activate!(params[:user], ACTIVATION[:prompt]) do |result|
