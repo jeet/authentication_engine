@@ -17,7 +17,7 @@ module NavigationHelpers
     when /the account page/
       account_path
 
-    when /the singup page/
+    when /the signup page/
       signup_path
     when /the registration form/
       signup_path

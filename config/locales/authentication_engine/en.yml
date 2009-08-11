@@ -216,7 +216,7 @@ en:
       titles:
         index: "Invitations List"
       actions:
-        send: "Send invitation"
+        send: "Send mail to invitee"
       self: "self"
     title_prefix: "Admin"
   

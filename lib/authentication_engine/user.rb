@@ -9,7 +9,7 @@ module AuthenticationEngine
 
     # require authlogic
     module InstanceMethods
-      # We need to distinguish general signup or invitee singup
+      # We need to distinguish general signup or invitee signup
       def signup!(user, prompt, &block)
         return save(true, &block) if respond_to?(:openid_complete?) && session_class.activated? && openid_complete?
         return signup_by_openid!(user, &block) if respond_to?(:signup_by_openid!) && user && !user[:openid_identifier].blank?
@@ -304,11 +304,11 @@ module AuthenticationEngine
       end
 
       # method chain procedure:
-      # signup! (in controller) => singup! (state_machine of User) => signup_with_authentication!
+      # signup! (in controller) => signup! (state_machine of User) => signup_with_authentication!
       def signup_with_authentication!(user, prompt, &block)
         result = signup_with_params(user, prompt, &block)
         # fire "signup" event only when user is created/signed up successfully
-        # since login, password and password_confirmation aren't required for singup,
+        # since login, password and password_confirmation aren't required for signup,
         # skip run_action (save) of state_machine to avoid validation on update,
         # and return "final" result to avoid double render/redirect error
         signup_without_authentication! false if result
@@ -317,7 +317,7 @@ module AuthenticationEngine
       def signup_with_register!(user, prompt, &block)
         result = signup_without_register!(user, prompt, &block)
         # fire "register" event only when user is created/signed up successfully
-        # since login, password and password_confirmation aren't required for singup,
+        # since login, password and password_confirmation aren't required for signup,
         # skip run_action (save) of state_machine to avoid validation on update
         # and return "final" result to avoid double render/redirect error
         register false if result

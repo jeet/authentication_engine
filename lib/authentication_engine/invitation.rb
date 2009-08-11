@@ -23,6 +23,7 @@ module AuthenticationEngine
           attr_accessor :applicant_name
           attr_accessor :applicant_email
 
+          validates_presence_of :applicant_name, :unless => :sender
           validates_presence_of :applicant_email, :unless => :sender
           validates_length_of :applicant_email, :within => 6..100, :unless => :sender
           validates_format_of :applicant_email, :with => Authlogic::Regex.email, :message => :invalid, :unless => :sender
@@ -66,6 +67,7 @@ module AuthenticationEngine
         receiver.class_eval do
           has_one :recipient, :class_name => 'User'
 
+          validates_presence_of :recipient_name, :if => :sender
           validates_presence_of :recipient_email, :if => :sender
           validates_length_of :recipient_email, :within => 6..100, :if => :sender
           validates_format_of :recipient_email, :with => Authlogic::Regex.email, :message => :invalid, :if => :sender
@@ -74,7 +76,7 @@ module AuthenticationEngine
           validate :recipient_is_not_registered, :if => :sender
           validate :sender_has_invitations, :if => :sender
 
-          before_save :singup_recipient
+          before_save :signup_recipient
         end
       end
 
@@ -88,7 +90,7 @@ module AuthenticationEngine
         errors.add_to_base :reach_invitation_limit unless sender.invitation_limit > 0
       end
 
-      def singup_recipient
+      def signup_recipient
         build_recipient :name => recipient_name, :email => recipient_email
       end
     end

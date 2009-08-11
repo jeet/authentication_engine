@@ -215,7 +215,7 @@
       titles:
         index: "邀请列表"
       actions:
-        send: "送出邀请"
+        send: "送出邀请信"
       self: "自己"
     title_prefix: "管理"
   
