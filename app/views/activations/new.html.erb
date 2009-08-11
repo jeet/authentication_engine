@@ -2,6 +2,20 @@
 
 <% form_for @user, :url => activate_path(@user), :html => { :method => :post } do |f| %>
   <%= f.error_messages %>
+  <%- if @invitation -%>
+  <%= f.hidden_field :invitation_id %>
+  <%= hidden_field_tag :invitation_token, @invitation.token %>
+  <fieldset>
+    <p>
+      <%= f.label :name %><br />
+      <%= f.text_field :name %>
+    </p>
+    <p>
+      <%= f.label :email %><br />
+      <%= f.text_field :email %>
+    </p>
+  </fieldset>
+  <%- end -%>
   <fieldset>
     <p>
       <%= f.label :login %><br />

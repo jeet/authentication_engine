@@ -8,8 +8,8 @@ module AuthenticationEngine
       module InstanceMethods
         protected
 
-        def no_user_signup
-          redirect_to root_url unless REGISTRATION[:private] or REGISTRATION[:requested] or REGISTRATION[:public]
+        def public_signup
+          redirect_to root_url unless REGISTRATION[:public]
         end
       end
 
@@ -17,7 +17,7 @@ module AuthenticationEngine
         receiver.extend ClassMethods
         receiver.send :include, InstanceMethods
         receiver.class_eval do
-          before_filter :no_user_signup, :only => [:new, :create]
+          before_filter :public_signup, :only => [:new, :create]
           before_filter :require_no_user, :only => [:new, :create]
           before_filter :require_user, :only => [:show, :edit, :update]
         end

@@ -170,14 +170,6 @@ module AuthenticationEngine
           has_many :sent_invitations, :class_name => 'Invitation', :foreign_key => 'sender_id'
           belongs_to :invitation
 
-          validates_length_of :login, :within => 3..100, :on => :create, :if => :invited_and_require_password?
-          validates_format_of :login, :with => /\A\w[\w\.\-_@ ]+\z/, :on => :create, :message => I18n.t('authlogic.error_messages.login_invalid', :default => "should use only letters, numbers, spaces, and .-_@ please."), :if => :invited_and_require_password?
-          validates_uniqueness_of :login, :on => :create, :case_sensitive => false, :if => :invited_and_require_password?
-
-          validates_length_of :password, :minimum => 4, :on => :create, :if => :invited_and_require_password?
-          validates_confirmation_of :password_confirmation, :on => :create, :if => :invited_and_require_password?
-          validates_length_of :password_confirmation, :minimum => 4, :on => :create, :if => :invited_and_require_password?
-
           validates_uniqueness_of :invitation_id, :allow_nil => true
           attr_accessible :invitation_id
 
@@ -199,10 +191,6 @@ module AuthenticationEngine
 
       def invitation_token=(token)
         self.invitation = Invitation.find_by_token(token)
-      end
-
-      def invited_and_require_password?
-        !invitation_id.blank? && validate_password_with_openid?
       end
 
       def deliver_invitation_activation_notice!
@@ -328,20 +316,11 @@ module AuthenticationEngine
 
       def signup_with_register!(user, prompt, &block)
         result = signup_without_register!(user, prompt, &block)
-        if result
-          if invitation_id.blank?
-            # fire "register" event only when user is created/signed up successfully
-            # since login, password and password_confirmation aren't required for singup,
-            # skip run_action (save) of state_machine to avoid validation on update
-            # and return "final" result to avoid double render/redirect error
-            register false
-          else
-            apply
-            approve
-            invite
-            activate
-          end
-        end
+        # fire "register" event only when user is created/signed up successfully
+        # since login, password and password_confirmation aren't required for singup,
+        # skip run_action (save) of state_machine to avoid validation on update
+        # and return "final" result to avoid double render/redirect error
+        register false if result
       end
 
       def activate_with_authentication!(user, prompt, &block)
@@ -356,6 +335,11 @@ module AuthenticationEngine
           # turn on validation of magic states of authlogic session
           # since user may not be "approved" or "confirmed?" and cause validation of magic states
           self.class.session_class.disable_magic_states false
+        end
+        if result && !invitation_id.blank?
+          apply
+          approve
+          invite
         end
         # fire "activate" event only when user is activated with credentials successfully
         # do run_action (save) of state_machine since user is "active" or "approved" before validation

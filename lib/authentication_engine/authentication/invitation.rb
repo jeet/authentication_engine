@@ -29,7 +29,7 @@ module AuthenticationEngine
           before_filter :private_signup, :only => [:new]
           before_filter :requested_signup, :only => [:apply]
           before_filter :private_or_requested_signup, :only => [:create]
-          
+
           # require_user if only registered users can send invites
           before_filter :require_user, :only => [:new]
           # require_no_user if only non-registered users can request invitations

@@ -1,4 +1,3 @@
-@focus
 Feature: Invitations
   As a site member
   I want to be able to invite my friends
@@ -19,17 +18,17 @@ Scenario: Invite a friend
   Then "lina@example.com" should receive 1 email
   When "lina@example.com" opens the email with subject "User Invitation"
   Then "lina@example.com" should see "bob has invited you to register." in the email
-
+@focus
 Scenario: Accept invitation
   Given a user with email "lina@example.com" who was invited by "bob"
   When "lina@example.com" opens the email with subject "User Invitation"
   Then "lina@example.com" should see "bob has invited you to register." in the email
   When I click the first link in the email
-  Then I should see "Register Account"
+  Then I should see "Activate your account"
   When I fill in "Login" with "lina"
-    And I fill in "Password" with "secret"
+    And I fill in "Set your password" with "secret"
     And I fill in "Password confirmation" with "secret"
-    And I press "Register"
+    And I press "Activate"
   Then I should see "Your account has been activated."
     And I should be logged in
   Then I should have 2 emails at all

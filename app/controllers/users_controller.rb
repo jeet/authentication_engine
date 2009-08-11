@@ -2,26 +2,16 @@ class UsersController < ApplicationController
   unloadable
   include AuthenticationEngine::Authentication::User
   before_filter :find_user, :only => [:show, :edit, :update]
+  before_filter :new_user, :only => [:new, :create]
   include AuthenticationEngine::Authorization::User
 
   # GET /account
   def show
   end
 
-  # GET /accept/:invitation_token
   # GET /signup
   def new
-    if find_invitation
-      @user = User.new(
-        :name => @invitation.recipient_name,
-        :email => @invitation.recipient_email,
-        :invitation_id => @invitation.id
-      )
-    elsif REGISTRATION[:public]
-      @user = User.new
-    else
-      redirect_to root_url
-    end
+    redirect_to root_url and return unless REGISTRATION[:public]
   end
 
   # GET /account/edit
@@ -30,23 +20,13 @@ class UsersController < ApplicationController
 
   # POST /account
   def create
-    redirect_to root_url and return unless find_invitation or REGISTRATION[:public]
-
-    @user = User.new
+    redirect_to root_url and return unless REGISTRATION[:public]
 
     @user.signup!(params[:user], SIGNUP[:prompt]) do |result|
       if result
-        if @user.invitation
-          @user.deliver_activation_confirmation!
-          #TODO: fix failing mailer template
-          # @user.deliver_invitation_activation_notice!
-          flash[:success] = t('activations.flashs.success.create')
-          redirect_to account_url
-        else
-          @user.deliver_activation_instructions!
-          flash[:success] = t('users.flashs.success.create')
-          redirect_to root_url
-        end
+        @user.deliver_activation_instructions!
+        flash[:success] = t('users.flashs.success.create')
+        redirect_to root_url
       else
         render :action => :new
       end
@@ -74,10 +54,7 @@ class UsersController < ApplicationController
     redirect_to root_url if @user.blank?
   end
 
-  def find_invitation
-    return false unless params[:invitation_token]
-    @invitation = Invitation.find_by_token(params[:invitation_token])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to root_url
+  def new_user
+    @user = User.new
   end
 end

@@ -7,7 +7,8 @@ authorization do
 
   role :member, :title => "Member" do
     description "The default role for authenticated user"
-    has_permission_on :users, :to => [:show, :update]
+    #show/update account, invite friends
+    has_permission_on :users, :to => [:show, :update, :create]
   end
 
   role :author, :title => "Author" do

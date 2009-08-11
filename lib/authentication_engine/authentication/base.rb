@@ -47,6 +47,10 @@ module AuthenticationEngine
         def admin?
           current_user && current_user.admin?
         end
+      end
+
+      module RestrictionMethods
+        protected
 
         def limited_signup
           redirect_to root_url unless REGISTRATION[:limited]
@@ -55,6 +59,14 @@ module AuthenticationEngine
         def public_signup
           redirect_to root_url unless REGISTRATION[:public]
         end
+
+        def limited_or_public_signup
+          redirect_to root_url unless REGISTRATION[:limited] or REGISTRATION[:public]
+        end
+
+        def no_user_signup
+          redirect_to root_url unless REGISTRATION[:private] or REGISTRATION[:requested] or REGISTRATION[:public]
+        end
       end
 
       # Inclusion hook to make #current_user and #current_user_session
@@ -62,6 +74,7 @@ module AuthenticationEngine
       def self.included(receiver)
         receiver.extend ClassMethods
         receiver.send :include, InstanceMethods
+        receiver.send :include, RestrictionMethods
         receiver.class_eval do
           helper_method :current_user_session, :current_user, :admin?
           filter_parameter_logging :password, :password_confirmation

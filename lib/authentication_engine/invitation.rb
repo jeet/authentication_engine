@@ -29,6 +29,8 @@ module AuthenticationEngine
 
           validate :applicant_is_not_invited, :unless => :sender
           validate :applicant_is_not_registered, :unless => :sender
+
+          named_scope :has_invited, lambda {|mail| {:conditions => ['recipient_email = ? AND sent_at IS NOT NULL', mail]} }
         end
       end
 
@@ -51,7 +53,7 @@ module AuthenticationEngine
       private
 
       def applicant_is_not_invited
-        errors.add :applicant_email, :taken unless self.class.invited(applicant_email).blank?
+        errors.add :applicant_email, :taken unless self.class.has_invited(applicant_email).blank?
       end
 
       def applicant_is_not_registered
@@ -63,14 +65,16 @@ module AuthenticationEngine
       def self.included(receiver)
         receiver.class_eval do
           has_one :recipient, :class_name => 'User'
-          
+
           validates_presence_of :recipient_email, :if => :sender
           validates_length_of :recipient_email, :within => 6..100, :if => :sender
           validates_format_of :recipient_email, :with => Authlogic::Regex.email, :message => :invalid, :if => :sender
           validates_uniqueness_of :recipient_email, :case_sensitive => false, :if => :sender
-          
+
           validate :recipient_is_not_registered, :if => :sender
           validate :sender_has_invitations, :if => :sender
+
+          before_save :singup_recipient
         end
       end
 
@@ -83,6 +87,10 @@ module AuthenticationEngine
       def sender_has_invitations
         errors.add_to_base :reach_invitation_limit unless sender.invitation_limit > 0
       end
+
+      def singup_recipient
+        build_recipient :name => recipient_name, :email => recipient_email
+      end
     end
 
     def self.included(receiver)
@@ -92,7 +100,7 @@ module AuthenticationEngine
       receiver.send :include, RecipientMethods
       receiver.class_eval do
         belongs_to :sender, :class_name => 'User'
-        
+
         before_create :generate_token
         before_create :decrement_sender_count, :if => :sender
       end
