@@ -48,7 +48,7 @@ Given /^I should see a login form$/ do
 end
 
 When /^I open the homepage in a new window$/ do
-  new_window = ::Webrat.session_class.new(self)
+  new_window = Webrat.session_class.new(self)
   new_window.visit root_path
 end
 
