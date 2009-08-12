@@ -11,7 +11,7 @@ module AuthenticationEngine
     module InstanceMethods
       # We need to distinguish general signup or invitee signup
       def signup!(user, prompt, &block)
-        return save(true, &block) if respond_to?(:openid_complete?) && session_class.activated? && openid_complete?
+        return save(true, &block) if session_class.activated? && openid_complete?
         return signup_by_openid!(user, &block) if respond_to?(:signup_by_openid!) && user && !user[:openid_identifier].blank?
         return signup_as_invitee!(user, prompt, &block) if respond_to?(:signup_as_invitee!) && user && user[:invitation_id]
         signup_without_credentials!(user, &block)
@@ -88,7 +88,7 @@ module AuthenticationEngine
 
           # hack by alias_method_chain for authlogic-oid
           alias_method_chain :attributes_to_save, :reliability
-          alias_method_chain :map_openid_registration, :custom_fields
+          alias_method_chain :map_openid_registration, :persona_fields
         end
       end
 
@@ -114,7 +114,7 @@ module AuthenticationEngine
 
       # fetch persona from openid.sreg parameters returned by openid server if supported
       # http://openid.net/specs/openid-simple-registration-extension-1_0.html
-      def map_openid_registration_with_custom_fields(registration)
+      def map_openid_registration_with_persona_fields(registration)
         self.nickname ||= registration["nickname"] if respond_to?(:nickname) && !registration["nickname"].blank?
         self.login ||= registration["nickname"] if respond_to?(:login) && !registration["nickname"].blank?
         self.email ||= registration["email"] if respond_to?(:email) && !registration["email"].blank?
