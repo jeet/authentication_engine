@@ -14,7 +14,7 @@ class InvitationsController < ApplicationController
     @invitation = Invitation.new(params[:invitation])
     @invitation.sender = current_user
     if @invitation.save
-      if current_user
+      if current_user #&& current_user.active?
         UserMailer.deliver_invitation(@invitation, accept_url(@invitation.token))
         flash[:success] = t('invitations.flashs.success.create')
         redirect_to root_url

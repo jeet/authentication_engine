@@ -20,8 +20,6 @@ module AuthenticationEngine
     module ApplicantMethods
       def self.included(receiver)
         receiver.class_eval do
-          attr_accessor :applicant_name
-          attr_accessor :applicant_email
 
           validates_presence_of :applicant_name, :unless => :sender
           validates_presence_of :applicant_email, :unless => :sender
@@ -76,7 +74,7 @@ module AuthenticationEngine
           validate :recipient_is_not_registered, :if => :sender
           validate :sender_has_invitations, :if => :sender
 
-          before_save :signup_recipient
+          after_save :signup_recipient
         end
       end
 
@@ -92,6 +90,7 @@ module AuthenticationEngine
 
       def signup_recipient
         build_recipient :name => recipient_name, :email => recipient_email
+        recipient.signup! nil, false
       end
     end
 
