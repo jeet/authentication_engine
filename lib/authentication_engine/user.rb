@@ -324,6 +324,7 @@ module AuthenticationEngine
           alias_method_chain :signup!, :register
           alias_method_chain :signup_as_requested_invitee!, :apply
           alias_method_chain :activate!, :authentication
+          alias_method_chain :approved?, :active
         end
       end
 
@@ -374,6 +375,11 @@ module AuthenticationEngine
         # do run_action (save) of state_machine since user is "active" or "approved" before validation
         # and return "final" result to avoid double render/redirect error
         activate_without_authentication! if result
+      end
+
+      def approved_with_active?
+        return true if active?
+        approved_without_active?
       end
     end
 

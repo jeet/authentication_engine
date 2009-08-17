@@ -95,11 +95,11 @@ Feature: Requested Invitation
 
     Examples: Bad inputs
       | name   | email              | login  | password | confirmation | count | error_message                                                   |
-      |        |                    |        |          |              | 8     | Name can't be blank                                             |
-      |        |                    |        |          |              | 8     | Email is too short (minimum is 6 characters)                    |
-      |        | oops               |        |          |              | 8     | Email should look like an email address                         |
-      | joanne | joanne@example.com |        |          |              | 5     | Login is too short (minimum is 3 characters)                    |
-      | joanne | joanne@example.com | joanne |          |              | 3     | Password is too short (minimum is 4 characters)                 |
+      |        |                    |        |          | x            | 8     | Name can't be blank                                             |
+      |        |                    |        |          | x            | 8     | Email is too short (minimum is 6 characters)                    |
+      |        | oops               |        |          | x            | 8     | Email should look like an email address                         |
+      | joanne | joanne@example.com |        |          | x            | 5     | Login is too short (minimum is 3 characters)                    |
+      | joanne | joanne@example.com | joanne |          | x            | 3     | Password is too short (minimum is 4 characters)                 |
       | joanne | joanne@example.com |        | secret   |              | 4     | Password confirmation is too short (minimum is 4 characters)    |
       | joanne | joanne@example.com |        |          | secret       | 4     | Login should use only letters, numbers, spaces, and .-_@ please |
       | joanne | joanne@example.com | joanne | secret   |              | 2     | Password confirmation is too short (minimum is 4 characters)    |

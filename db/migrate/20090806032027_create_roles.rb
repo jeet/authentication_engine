@@ -29,6 +29,7 @@ class CreateRoles < ActiveRecord::Migration
         :email => "root@example.com"
       )
       root_user.admin = true
+      root_user.state = "active"
       root_user.save(false)
       puts "Root user created. login/password is root/root. Please change immediately!"
     else
