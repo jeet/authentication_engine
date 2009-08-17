@@ -36,6 +36,8 @@ Then /^I should see the registration form$/ do
 end
 
 Then /^I should see the activation form$/ do
+  response.should contain('Name') if controller.params[:invitation_token]
+  response.should contain('Email') if controller.params[:invitation_token]
   response.should contain('Login')
   response.should contain('Set your password')
   response.should contain('Password confirmation')

@@ -146,6 +146,8 @@ module AuthenticationEngine
           self.password = user[:password]
           self.password_confirmation = user[:password_confirmation]
           self.openid_identifier = user[:openid_identifier] if respond_to?(:openid_identifier)
+          self.name = user[:name] unless self.invitation_id.blank?
+          self.email = user[:email] unless self.invitation_id.blank? 
         end
         logged = prompt && validate_password_with_openid?
         save_with_block(logged, &block)
@@ -183,6 +185,11 @@ module AuthenticationEngine
         self.attributes = user if user
         logged = prompt && validate_password_with_openid?
         save_with_block(logged, &block)
+      end
+
+      def signup_as_requested_invitee!(user, &block)
+        self.attributes = user if user
+        save_with_block(true, &block)
       end
 
       def invitation_token
@@ -248,7 +255,23 @@ module AuthenticationEngine
           alias_method :activate_with_credentials!, :activate!
 
           state_machine :initial => :created do
-            after_transition :created => :registered do |user, transition|
+            after_transition :created => [:registered, :applied] do |user, transition|
+              # disable perishable token reset for signup mail delivering
+              user.class.disable_perishable_token_maintenance true
+              #u.save false # persis the state
+              user.save_without_session_maintenance false # persis the state
+              user.class.disable_perishable_token_maintenance false
+            end
+
+            after_transition [:registered, :applied] => :approved do |user, transition|
+              # disable perishable token reset for signup mail delivering
+              user.class.disable_perishable_token_maintenance true
+              #u.save false # persis the state
+              user.save_without_session_maintenance false # persis the state
+              user.class.disable_perishable_token_maintenance false
+            end
+
+            after_transition :approved => :invited do |user, transition|
               # disable perishable token reset for signup mail delivering
               user.class.disable_perishable_token_maintenance true
               #u.save false # persis the state
@@ -299,6 +322,7 @@ module AuthenticationEngine
           #alias_method_chain :signup!, :authentication
 
           alias_method_chain :signup!, :register
+          alias_method_chain :signup_as_requested_invitee!, :apply
           alias_method_chain :activate!, :authentication
         end
       end
@@ -321,6 +345,11 @@ module AuthenticationEngine
         # skip run_action (save) of state_machine to avoid validation on update
         # and return "final" result to avoid double render/redirect error
         register false if result
+      end
+
+      def signup_as_requested_invitee_with_apply!(user, &block)
+        result = signup_as_requested_invitee_without_apply!(user, &block)
+        apply false if result
       end
 
       def activate_with_authentication!(user, prompt, &block)

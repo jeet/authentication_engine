@@ -31,6 +31,16 @@ module NavigationHelpers
     when /the change password form with bad token/
       edit_password_reset_path('bad')
 
+    when /the invitation request form/
+      apply_invitations_path
+    when /the invitation accept form with bad token/
+      accept_path('bad')
+
+    when /the admin root page/
+      admin_root_path
+    when /the invitations list page/
+      admin_invitations_path
+
     # Add more mappings here.
     # Here is a more fancy example:
     #

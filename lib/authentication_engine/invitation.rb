@@ -6,6 +6,7 @@ module AuthenticationEngine
 
     # require authlogic
     module InstanceMethods
+
       private
 
       def generate_token
@@ -20,7 +21,6 @@ module AuthenticationEngine
     module ApplicantMethods
       def self.included(receiver)
         receiver.class_eval do
-
           validates_presence_of :applicant_name, :unless => :sender
           validates_presence_of :applicant_email, :unless => :sender
           validates_length_of :applicant_email, :within => 6..100, :unless => :sender
@@ -49,6 +49,17 @@ module AuthenticationEngine
         self.recipient_email = email
       end
 
+      def approve_applicant
+        recipient.approve false if recipient.respond_to?(:approve) && recipient.can_approve?
+        self.sent_at = Time.now
+        save
+      end
+
+      def deliver_acception(accept_url)
+        ::UserMailer.deliver_invitation(self, accept_url)
+        recipient.invite false if recipient.respond_to?(:invite)
+      end
+
       private
 
       def applicant_is_not_invited
@@ -56,7 +67,11 @@ module AuthenticationEngine
       end
 
       def applicant_is_not_registered
-        errors.add :applicant_email, :registered if ::User.find_by_email(applicant_email)
+        if ::User.respond_to?(:with_states)
+          errors.add :applicant_email, :registered if ::User.with_states([:created, :applied]).find_by_email(applicant_email)
+        else
+          errors.add :applicant_email, :registered if ::User.find_by_email(applicant_email)
+        end
       end
     end
 
@@ -81,7 +96,11 @@ module AuthenticationEngine
       private
 
       def recipient_is_not_registered
-        errors.add :recipient_email, :registered if ::User.find_by_email(recipient_email)
+        if ::User.respond_to?(:with_states)
+          errors.add :recipient_email, :registered if ::User.with_states([:created, :applied]).find_by_email(recipient_email)
+        else
+          errors.add :recipient_email, :registered if ::User.find_by_email(recipient_email)
+        end
       end
 
       def sender_has_invitations
@@ -90,7 +109,8 @@ module AuthenticationEngine
 
       def signup_recipient
         build_recipient :name => recipient_name, :email => recipient_email
-        recipient.signup! nil, false
+        recipient.signup_as_requested_invitee! nil
+        reload
       end
     end
 
