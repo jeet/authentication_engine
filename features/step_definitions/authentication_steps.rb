@@ -1,3 +1,15 @@
+module ActionController
+  module Integration
+    class Session
+      def in_a_separate_session
+        old = @response.clone
+        yield
+        @response = old
+      end
+    end
+  end
+end
+
 Given /^I am an anonymous user$/ do
   visit '/logout'
 end
@@ -48,8 +60,10 @@ Given /^I should see a login form$/ do
 end
 
 When /^I open the homepage in a new window$/ do
-  new_window = Webrat.session_class.new(self)
-  new_window.visit root_path
+  in_a_separate_session do
+	visit "/"
+	response.should contain("Logout")
+  end
 end
 
 
