@@ -17,6 +17,10 @@
   <%=h @user.openid_identifier %>
 </p>
 <p>
+  <b><%= at(User, :roles) %>:</b>
+  <%=h @user.roles.map(&:name).join(', ') %>
+</p>
+<p>
   <b><%= at(User, :login_count) %>:</b>
   <%=h @user.login_count %>
 </p>

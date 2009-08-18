@@ -23,6 +23,8 @@ authorization do
 
   role :admin, :title => "Administrator" do
     description "The powerest role of the system"
+    has_permission_on :authorization_rules, :to => :read
+    has_permission_on :authorization_usages, :to => :read
     has_permission_on :users, :to => :manage
     has_permission_on :roles, :to => :manage
   end
