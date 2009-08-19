@@ -1,15 +1,3 @@
-module ActionController
-  module Integration
-    class Session
-      def in_a_separate_session
-        old = @response.clone
-        yield
-        @response = old
-      end
-    end
-  end
-end
-
 Given /^I am an anonymous user$/ do
   visit '/logout'
 end
@@ -59,13 +47,21 @@ Given /^I should see a login form$/ do
   response.should contain("Open ID")
 end
 
-When /^I open the homepage in a new window$/ do
-  in_a_separate_session do
-	visit "/"
-	response.should contain("Logout")
+When /^I open the homepage in a new window with cookies$/ do
+  in_a_separate_session do |sess|
+    visit root_path
+    response.should contain("Logout")
   end
+  response.should contain("Logout")
 end
 
+When /^I open the homepage in a new window without cookies$/ do
+  in_a_new_session do |sess|
+    visit root_path
+    response.should_not contain("Logout")
+  end
+  response.should contain("Logout")
+end
 
 # http://wiki.github.com/aslakhellesoy/cucumber/multiline-step-arguments
 # http://wiki.github.com/aslakhellesoy/cucumber/background

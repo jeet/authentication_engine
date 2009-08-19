@@ -31,3 +31,5 @@ require 'factory_girl'
 
 # mock the response of open id server
 require 'authentication_engine/test_case/mock_open_id_authentication'
+# add session helper
+require 'authentication_engine/test_case/session_helper'
