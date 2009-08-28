@@ -218,6 +218,7 @@ module AuthenticationEngine
           has_one :preference, :class_name => "Preference", :foreign_key => "user_id"
           accepts_nested_attributes_for :preference, :allow_destroy => true
           attr_accessible :preference_attributes
+          after_create :create_preference
         end
       end
     end
