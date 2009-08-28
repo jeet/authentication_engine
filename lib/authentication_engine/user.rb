@@ -212,6 +212,16 @@ module AuthenticationEngine
       end
     end
 
+    module PreferenceMethods
+      def self.included(receiver)
+        receiver.class_eval do
+          has_one :preference, :class_name => "Preference", :foreign_key => "user_id"
+          accepts_nested_attributes_for :preference, :allow_destroy => true
+          attr_accessible :preference_attributes
+        end
+      end
+    end
+
     # require declarative_authorization
     module Authorization
       def self.included(receiver)
@@ -390,6 +400,7 @@ module AuthenticationEngine
       receiver.send :include, AuthlogicOpenIdMethods
       receiver.send :include, ActivationMethods
       receiver.send :include, InvitationMethods
+      receiver.send :include, PreferenceMethods
       receiver.class_eval do
         validates_presence_of :name
 
