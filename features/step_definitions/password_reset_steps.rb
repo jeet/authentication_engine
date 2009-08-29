@@ -3,9 +3,9 @@ Given /^I am a user who opened my reset password email$/ do
   When "I go to the reset password page"
   And "I fill in \"email\" with \"bob@example.com\""
   And "I press \"Reset my password\""
-  Then "I should receive an email"
+  Then "\"bob@example.com\" should receive an email"
   When "I open the email"
-  Then "I should see \"reset your password\" in the email"
+  Then "I should see \"reset your password\" in the email body"
 end
 
 

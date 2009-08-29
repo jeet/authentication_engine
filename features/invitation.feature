@@ -3,7 +3,7 @@ Feature: Invitations
   I want to be able to invite my friends
   So that I interact with them online
 
-  Scenario: Invite a friend
+  Scenario: I invites my friends
     Given I am a confirmed user "bob" with password "secret"
       And I am logged in as "bob" with password "secret"
      Then I should see "Send Invitation"
@@ -16,13 +16,13 @@ Feature: Invitations
      Then I should see "Thank you, invitation sent."
       And I should have 4 invitations left
      Then "lina@example.com" should receive 1 email
-     When "lina@example.com" opens the email with subject "User Invitation"
-     Then "lina@example.com" should see "bob has invited you to register." in the email
+     When they open the email with subject "User Invitation"
+     Then they should see "bob has invited you to register." in the email body
   
-  Scenario: Accept invitation
-    Given a user with email "lina@example.com" who was invited by "bob"
+  Scenario: Friends accept my invitation
+    Given I am a user with email "lina@example.com" who was invited by "bob"
      When "lina@example.com" opens the email with subject "User Invitation"
-     Then "lina@example.com" should see "bob has invited you to register." in the email
+     Then I should see "bob has invited you to register." in the email body
      When I click the first link in the email
      Then I should see "Activate your account"
      When I fill in "Login" with "lina"
@@ -33,9 +33,9 @@ Feature: Invitations
       And I should be logged in
      Then I should have 2 emails at all
      When I open the most recent email
-     Then I should see "Activation Complete" in the subject
+     Then I should see "Activation Complete" in the email subject
     # TODO: implement when failing mailer template is fixed
     # Then "bob@example.com" should have 1 email
     # When "bob@example.com" opens the email
-    # Then "bob@example.com" should see "Invitation Activated" in the subject
+    # Then "bob@example.com" should see "Invitation Activated" in the email subject
   

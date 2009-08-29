@@ -51,8 +51,16 @@ The authentication_engine:sync rake moves following files into your app:
   app/helpers/layout_helper.rb
   app/views/layout/application.html.erb
   config/authentication_engine.yml
+  config/authorization_rules.rb
+  config/database.yml
+  config/environments/cucumber.rb
   config/environments/test.rb
   config/initializers/config_loader.rb
+  config/initializers/delarative_authorization.rb
+  config/initializers/locales.rb
+  config/locales/en.yml
+  config/locales/zh-CN.yml
+  config/locales/zh-TW.yml
   config/locales/authentication_engine/en.yml
   config/locales/authentication_engine/zh-CN.yml
   config/locales/authentication_engine/zh-TW.yml
@@ -61,14 +69,35 @@ The authentication_engine:sync rake moves following files into your app:
   config/locales/authlogic/zh-TW.yml
   config/locales/rails/zh-CN.yml
   config/locales/rails/zh-TW.yml
-  config/locales/en.yml
-  config/locales/zh-CN.yml
-  config/locales/zh-TW.yml
   db/migrate/20090216144927_create_users.rb
-  db/migrate/20090216172211_create_open_id_talbes.rb
+  db/migrate/20090216172211_create_open_id_tables.rb
   db/migrate/20090216175329_create_invitations.rb
+  db/migrate/20090714114804_add_state_to_user.rb
   db/migrate/20090806032027_create_roles.rb
+  db/migrate/20090828070047_create_preferences.rb
+  db/migrate/20090829101822_create_root_user.rb
+  public/images/User_state.png
+  public/images/rails.png
+  public/images/admin/
+  public/images/admin/accept.png
+  public/images/admin/error.png
+  public/images/admin/exclamation.png
+  public/images/admin/fpo.png
+  public/images/authentication_engine/
+  public/images/authentication_engine/cross.png
+  public/images/authentication_engine/email_go.png
+  public/images/authentication_engine/key.png
+  public/images/authentication_engine/lock_add.png
+  public/images/authentication_engine/lock_delete.png
+  public/images/authentication_engine/openid.png
+  public/images/authentication_engine/openid_icon.jpg
+  public/images/authentication_engine/user.png
+  public/images/authentication_engine/user_add.png
+  public/images/authentication_engine/user_delete.png
+  public/images/authentication_engine/user_edit.png
+  public/images/authentication_engine/user_suit.png
   public/stylesheets/authentication.css
+  public/stylesheets/admin/
   public/stylesheets/admin/admin.css
   public/stylesheets/admin/invitations.css
   public/stylesheets/admin/pagination.css

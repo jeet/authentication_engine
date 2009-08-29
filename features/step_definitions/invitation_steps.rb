@@ -22,7 +22,7 @@ Given /^I am an invited user with email "([^\"]*)"$/ do |email|
   u.activate!({:login => 'foobar', :password => 'secret', :password_confirmation => 'secret'}, false) {}
 end
 
-Given /^a user with email "([^\"]*)" who was invited by "([^\"]*)"$/ do |invitee, inviter|
+Given /^I am a user with email "([^\"]*)" who was invited by "([^\"]*)"$/ do |invitee, inviter|
   Given "I am a confirmed user \"#{inviter}\" with password \"secret\""
     And "I am logged in as \"#{inviter}\" with password \"secret\""
   When "I follow \"Send Invitation\""

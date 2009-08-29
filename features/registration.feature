@@ -101,5 +101,5 @@ Feature: Registration
     Given I have successfully activated my account
     Then I should have 2 emails at all
     When I open the most recent email
-    Then I should see "Activation Complete" in the subject
+    Then I should see "Activation Complete" in the email subject
   

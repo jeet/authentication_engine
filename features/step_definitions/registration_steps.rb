@@ -12,9 +12,9 @@ Given /^I have registered successfully$/ do
 end
 
 Given /^I have received an activation email$/ do
-  Given "I should receive an email"
+  Given "\"bob@example.com\" should receive an email"
   When "I open the email"
-  Then "I should see \"activate your account\" in the email"
+  Then "I should see \"activate your account\" in the email body"
 end
 
 Given /^I have successfully activated my account$/ do

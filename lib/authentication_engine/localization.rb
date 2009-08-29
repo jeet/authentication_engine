@@ -33,7 +33,7 @@ module AuthenticationEngine
           session[:language] = cookies[:language] = params[:language]
         elsif (session[:language].blank? or cookies[:language].blank?) && user_language
           session[:language] = cookies[:language] = user_language
-        else
+        elsif browser_language
           cookies[:language] = browser_language
         end
       end

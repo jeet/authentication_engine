@@ -120,7 +120,7 @@ Feature: Requested Invitation
     Then I should be logged in
     And I should have 2 emails at all
     When I open the most recent email
-    Then I should see "Activation Complete" in the subject
+    Then I should see "Activation Complete" in the email subject
     When I follow "Logout"
     Then I should be logged out
   
