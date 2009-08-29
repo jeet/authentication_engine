@@ -7,6 +7,8 @@ class CreatePreferences < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    User.all.each { |u| u.create_preference if u.preference.nil? }
   end
 
   def self.down
