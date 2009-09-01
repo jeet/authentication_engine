@@ -13,7 +13,7 @@ module AuthenticationEngine
       end
 
       def set_language(prefered = nil)
-        session[:language] = prefered if prefered
+        session[:language] = prefered unless prefered.blank?
         I18n.locale = session[:language] || cookies[:language] || browser_language || I18n.default_locale || 'en'
       end
 
@@ -29,11 +29,11 @@ module AuthenticationEngine
 
       # browser must accept cookies
       def persist_language
-        if params[:language]
+        if !params[:language].blank?
           session[:language] = cookies[:language] = params[:language]
-        elsif (session[:language].blank? or cookies[:language].blank?) && user_language
+        elsif (session[:language].blank? or cookies[:language].blank?) && !user_language.blank?
           session[:language] = cookies[:language] = user_language
-        elsif browser_language
+        elsif !browser_language.blank?
           cookies[:language] = browser_language
         end
       end

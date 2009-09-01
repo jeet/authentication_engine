@@ -43,7 +43,7 @@ class ActivationsController < ApplicationController
           redirect_to login_url
         else
           flash[:success] = t('activations.flashs.success.create')
-          redirect_to account_url
+          redirect_to edit_account_url
         end
       else
         render :action => :new
