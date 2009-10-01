@@ -22,7 +22,7 @@ ActionController::Routing::Routes.draw do |map|
   # map.resources :users, :only => [:show, :edit, :update]
 
   map.namespace :admin do |admin|
-    admin.root :controller => 'users'
+    # admin.root :controller => 'users'
     # admin.resource :account, :controller => 'users'
     if REGISTRATION[:limited]
       admin.resources :users, :only => [:index, :show, :new, :create]
