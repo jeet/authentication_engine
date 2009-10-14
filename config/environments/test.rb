@@ -28,6 +28,6 @@ config.action_mailer.delivery_method = :test
 # config.active_record.schema_format = :sql
 config.gem 'rspec', :lib => false, :version => '>= 1.2.8'
 config.gem 'rspec-rails', :lib => false, :version => '>= 1.2.7'
-config.gem 'cucumber', :lib => false, :version => '>=0.3.98'
-config.gem 'webrat', :lib => 'webrat', :version => '>=0.5.1'
+config.gem 'cucumber', :lib => false, :version => '>=0.3.99'
+config.gem 'webrat', :lib => 'webrat', :version => '>=0.5.3'
 config.gem 'bmabey-email_spec', :lib => 'email_spec', :source => 'http://gems.github.com', :version => '>=0.3.1'

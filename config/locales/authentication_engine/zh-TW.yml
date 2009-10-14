@@ -21,6 +21,8 @@
     attributes:
       role:
         name: "名稱"
+        title: "稱號"
+        description: "描述"
       user:
         name: "姓名"
         login: "登入帳號"
@@ -169,7 +171,7 @@
         logout_required: "你必須登出才能瀏覽此頁面。"
       errors:
         not_allowed: "抱歉！你不被允許瀏覽此頁面。"
-        admin_required: "抱歉，只有需要管理者權限"
+        admin_required: "抱歉，需要有管理者權限"
     titles:
       edit: "編輯我的帳號"
       new: "註冊帳號"

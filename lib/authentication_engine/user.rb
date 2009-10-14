@@ -250,6 +250,31 @@ module AuthenticationEngine
         (roles || []).map { |r| r.name.to_sym }
       end
 
+      def assign_role(role)
+        role_found = role.is_a?(::Role) ? role : ::Role.find_by_name(role.to_s)
+        roles << role_found if role_found && !roles.include?(role_found)
+        role_found
+      end
+
+      def map_roles(role_hash, skip_array=[])
+        new_role_ids = role_ids
+        role_hash.map do |name, token|
+          next if skip_array.include?(name.to_s) # skip basic role
+          role = ::Role.find_by_name(name.to_s)
+          unless role.nil?
+            new_role_ids.delete(role.id) if token == '0' or token == false
+            new_role_ids.push(role.id) if token == '1' or token == true
+          end
+        end
+        self.role_ids = new_role_ids
+      end
+
+      def has_role?(role_list=[])
+        role_list.any? do |role|
+          roles.map(&:name).include?(role)
+        end
+      end
+
       protected
 
       def set_current_user_for_model_security
@@ -258,7 +283,8 @@ module AuthenticationEngine
 
       def create_default_role
         return unless roles.empty?
-        roles << ::Role.find_or_create_by_name(:name => 'member', :title => 'Member')
+        ::Role.first ? ::Role.first : ::Role.find_or_create_by_name(:name => 'member', :title => 'Member')
+        assign_role(::Role.first)
       end
     end
 
@@ -314,7 +340,7 @@ module AuthenticationEngine
             end
 
             event :activate do
-              transition [:invited, :registered] => :active
+              transition [:invited, :registered, :disabled, :archived] => :active
             end
 
             event :disable do

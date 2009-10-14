@@ -21,6 +21,8 @@ en:
     attributes:
       role:
         name: "Name"
+        title: "Title"
+        description: "Description"
       user:
         name: "Name"
         login: "Login"

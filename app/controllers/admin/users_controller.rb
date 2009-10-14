@@ -20,7 +20,7 @@ class Admin::UsersController < Admin::AdminController
   def create
     @user = User.new
 
-    @user.signup_without_credentials!(params[:user]) do |result|
+    @user.signup!(params[:user], SIGNUP[:prompt]) do |result|
       if result
         current_user.increment! :invitation_limit
         @user.create_invitation(

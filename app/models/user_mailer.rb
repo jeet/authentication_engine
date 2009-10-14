@@ -4,7 +4,7 @@ class UserMailer < ActionMailer::Base
   def activation_instructions(user)
     subject       I18n.t('user_mailer.titles.activation_instructions')
     from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
-    recipients    user.email
+    recipients    "#{user.name} <#{user.email}>"
     sent_on       Time.now
     body          :account_activation_url => register_url(user.perishable_token)
   end
@@ -12,7 +12,7 @@ class UserMailer < ActionMailer::Base
   def activation_confirmation(user)
     subject       I18n.t('user_mailer.titles.activation_confirmation')
     from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
-    recipients    user.email
+    recipients    "#{user.name} <#{user.email}>"
     sent_on       Time.now
     body          :root_url => root_url
   end
@@ -20,7 +20,7 @@ class UserMailer < ActionMailer::Base
   def password_reset_instructions(user)
     subject       I18n.t('user_mailer.titles.password_reset_instructions')
     from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
-    recipients    user.email
+    recipients    "#{user.name} <#{user.email}>"
     sent_on       Time.now
     body          :edit_password_reset_url => edit_password_reset_url(user.perishable_token)
   end
@@ -28,7 +28,7 @@ class UserMailer < ActionMailer::Base
   def invitation(invitation, signup_url)
     subject       I18n.t('user_mailer.titles.user_invitation')
     from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
-    recipients    invitation.recipient_email
+    recipients    "#{invitation.recipient_name} <#{invitation.recipient_email}>"
     sent_on       Time.now
     body          :invitation => invitation, :signup_url => signup_url
 
