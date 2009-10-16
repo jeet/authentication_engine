@@ -38,6 +38,9 @@ development:
 test:
   <<: *shared
 
+cucumber:
+  <<: *shared
+
 staging:
   <<: *shared
 

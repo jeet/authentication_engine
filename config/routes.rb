@@ -36,6 +36,6 @@ ActionController::Routing::Routes.draw do |map|
   # paths that should be added manually to main routes.rb of application
   # map.root :controller => 'home', :action => 'index'
   # map.namespace :admin do |admin|
-  #   admin.root :controller => "admin", :action => "dashboard"
+  #   admin.root :controller => "home", :action => "dashboard"
   # end
 end

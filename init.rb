@@ -13,7 +13,7 @@ else
     require 'state_machine'
   rescue LoadError
     begin
-      gem 'authlogic', '2.1.1'
+      gem 'authlogic', '2.1.2'
       gem 'authlogic-oid', '1.0.4'
       gem 'ruby-openid', '2.1.7'
       gem 'declarative_authorization', '0.3.2.2'
