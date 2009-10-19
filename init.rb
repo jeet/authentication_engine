@@ -1,5 +1,5 @@
 if config.respond_to?(:gems)
-  config.gem 'authlogic', :lib => 'authlogic', :version => '2.1.1', :source => "http://gems.rubyforge.org" unless defined? Authlogic
+  config.gem 'authlogic', :lib => 'authlogic', :version => '>=2.1.1', :source => "http://gems.rubyforge.org" unless defined? Authlogic
   config.gem 'authlogic-oid', :lib => 'authlogic_openid', :version => '>=1.0.4', :source => "http://gems.rubyforge.org"
   config.gem 'ruby-openid', :lib => 'openid', :version => '>=2.1.7', :source => "http://gems.rubyforge.org"
   config.gem 'stffn-declarative_authorization', :lib => 'declarative_authorization', :version => '>=0.3.2.2', :source => 'http://gems.github.com'
