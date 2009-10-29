@@ -37,7 +37,7 @@ class UserMailer < ActionMailer::Base
 
   def invitation_request(invitation)
     subject       I18n.t('user_mailer.titles.user_invitation_request')
-    from          invitation.applicant_email
+    from          "#{invitation.applicant_name} <#{invitation.applicant_email}>"
     recipients    "#{ADMIN[:name]} <#{ADMIN[:email]}>"
     sent_on       Time.now
     body          :invitation => invitation
@@ -47,7 +47,7 @@ class UserMailer < ActionMailer::Base
     subject       'Invitation Activated'
     # subject       I18n.t('user_mailer.titles.user_invitation_request')
     from          "#{NOTIFIER[:name]} <#{NOTIFIER[:email]}>"
-    recipients    user.invitation.sender.email
+    recipients    "#{user.invitation.sender.name} <#{user.invitation.sender.email}>"
     sent_on       Time.now
     body          :user => user
   end

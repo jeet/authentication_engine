@@ -58,7 +58,7 @@ Then /^I should have an unsuccessful registration$/ do
 end
 
 Then /^I should have a successful activation$/ do
-  Then "I should see my account page"
+  Then "I should see my account editing page"
   And 'I should see "Your account has been activated"'
 end
 
@@ -86,6 +86,11 @@ end
 Then /^I should see my account page$/ do
   Then 'I should be on "the account page"'
   And 'I should see "User Account"'
+end
+
+Then /^I should see my account editing page$/ do
+  Then 'I should be on "the account editing page"'
+  And 'I should see "Editing My Account"'
 end
 
 Then /^I should not see my account page$/ do

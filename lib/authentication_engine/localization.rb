@@ -45,7 +45,10 @@ module AuthenticationEngine
 
       def browser_language
         return unless http_lang = request.env["HTTP_ACCEPT_LANGUAGE"] and !http_lang.blank?
-        browser_locale = http_lang[/^[a-z]{2}/i].downcase + '-' + http_lang[3,2].upcase
+        prefix, suffix = http_lang[/^[a-z]{2}/i], http_lang[3,2]
+        return unless prefix
+        browser_locale = prefix.downcase
+        browser_locale << '-' + suffix.upcase if suffix
         browser_locale.sub!(/-US/, '')
         languages_available.flatten.include?(browser_locale) ? browser_locale : nil
       end
